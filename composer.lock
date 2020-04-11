@@ -434,16 +434,16 @@
         },
         {
             "name": "karriere/json-decoder",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/karriereat/json-decoder.git",
-                "reference": "d0a7e9fc23bd00848815ea7217c00cf06631a92e"
+                "reference": "b059976e20c4fda3bbe6707c9bd5a3b9eb8a0b49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/karriereat/json-decoder/zipball/d0a7e9fc23bd00848815ea7217c00cf06631a92e",
-                "reference": "d0a7e9fc23bd00848815ea7217c00cf06631a92e",
+                "url": "https://api.github.com/repos/karriereat/json-decoder/zipball/b059976e20c4fda3bbe6707c9bd5a3b9eb8a0b49",
+                "reference": "b059976e20c4fda3bbe6707c9bd5a3b9eb8a0b49",
                 "shasum": ""
             },
             "require": {
@@ -477,7 +477,7 @@
                 "decoder",
                 "json"
             ],
-            "time": "2020-03-25T08:21:34+00:00"
+            "time": "2020-04-10T19:02:21+00:00"
         },
         {
             "name": "psr/http-message",

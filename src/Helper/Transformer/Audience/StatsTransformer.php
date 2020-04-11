@@ -11,6 +11,7 @@ namespace Szopen\Mailchimp\Helper\Transformer\Audience;
 
 use Karriere\JsonDecoder\Bindings\AliasBinding;
 use Karriere\JsonDecoder\Bindings\CallbackBinding;
+use Karriere\JsonDecoder\Bindings\DateTimeBinding;
 use Karriere\JsonDecoder\ClassBindings;
 use Karriere\JsonDecoder\Transformer;
 use Szopen\Mailchimp\Audience\Stats;
@@ -52,31 +53,18 @@ class StatsTransformer implements Transformer
         $classBindings->register(new AliasBinding("clickRate",
             "click_rate"));
 
-        $classBindings->register(new CallbackBinding('campaignLastSent', function ($data){
-            try{
-                return new \DateTime($data['campaign_last_sent']);
-            }
-            catch (\Exception $e){
-                return null;
-            }
-        }));
-        $classBindings->register(new CallbackBinding('lastSubDate', function ($data){
-            try{
-                return new \DateTime($data['last_sub_date']);
-            }
-            catch (\Exception $e){
-                return null;
-            }
-        }));
-        $classBindings->register(new CallbackBinding('lastUnsubDate', function ($data){
-            try{
-                return new \DateTime($data['last_unsub_date']);
-            }
-            catch (\Exception $e){
-                return null;
-            }
-        }));
-
+        $classBindings->register(new DateTimeBinding('campaignLastSent',
+            'campaign_last_sent',
+            false,
+            \DateTime::ISO8601));
+        $classBindings->register(new DateTimeBinding('lastSubDate',
+            'last_sub_date',
+            false,
+            \DateTime::ISO8601));
+        $classBindings->register(new DateTimeBinding('lastUnsubDate',
+            'last_unsub_date',
+            false,
+            \DateTime::ISO8601));
     }
 
     /**

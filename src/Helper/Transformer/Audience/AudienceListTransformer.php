@@ -11,6 +11,7 @@ namespace Szopen\Mailchimp\Helper\Transformer\Audience;
 use Karriere\JsonDecoder\Bindings\AliasBinding;
 use Karriere\JsonDecoder\Bindings\ArrayBinding;
 use Karriere\JsonDecoder\Bindings\CallbackBinding;
+use Karriere\JsonDecoder\Bindings\DateTimeBinding;
 use Karriere\JsonDecoder\Bindings\FieldBinding;
 use Karriere\JsonDecoder\ClassBindings;
 use Karriere\JsonDecoder\Transformer;
@@ -55,14 +56,11 @@ class AudienceListTransformer implements Transformer
         $classBindings->register(new ArrayBinding("links",
             "_links",
             Link::class));
-        $classBindings->register(new CallbackBinding('dateCreated', function ($data){
-            try{
-                return new \DateTime($data['date_created']);
-            }
-            catch (\Exception $e){
-                return null;
-            }
-        }));
+
+        $classBindings->register(new DateTimeBinding('dateCreated',
+            'date_created',
+            false,
+            \DateTime::ISO8601));
     }
 
     /**
