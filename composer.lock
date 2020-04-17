@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6800a05ec1baa78600a469959ae4b71a",
+    "content-hash": "335ab003201181eac97f1ba1433dcaf4",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -434,26 +434,25 @@
         },
         {
             "name": "karriere/json-decoder",
-            "version": "v3.1.0",
+            "version": "dev-feature/v4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/karriereat/json-decoder.git",
-                "reference": "b059976e20c4fda3bbe6707c9bd5a3b9eb8a0b49"
+                "reference": "5c590ff5a76a7840696a4153b3b172028eb2979a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/karriereat/json-decoder/zipball/b059976e20c4fda3bbe6707c9bd5a3b9eb8a0b49",
-                "reference": "b059976e20c4fda3bbe6707c9bd5a3b9eb8a0b49",
+                "url": "https://api.github.com/repos/karriereat/json-decoder/zipball/5c590ff5a76a7840696a4153b3b172028eb2979a",
+                "reference": "5c590ff5a76a7840696a4153b3b172028eb2979a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": ">=7.2",
+                "php-di/phpdoc-reader": "^2.1"
             },
             "require-dev": {
-                "karriere/code-quality": "^5.0",
-                "sebastian/comparator": "^3.0",
-                "sebastian/exporter": "^3.0",
-                "sebastian/recursion-context": "^3.0"
+                "phpunit/phpunit": "^8.0 || ^9.0",
+                "squizlabs/php_codesniffer": "^3.0"
             },
             "type": "library",
             "autoload": {
@@ -477,7 +476,44 @@
                 "decoder",
                 "json"
             ],
-            "time": "2020-04-10T19:02:21+00:00"
+            "time": "2020-04-15T19:21:13+00:00"
+        },
+        {
+            "name": "php-di/phpdoc-reader",
+            "version": "2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHP-DI/PhpDocReader.git",
+                "reference": "15678f7451c020226807f520efb867ad26fbbfcf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHP-DI/PhpDocReader/zipball/15678f7451c020226807f520efb867ad26fbbfcf",
+                "reference": "15678f7451c020226807f520efb867ad26fbbfcf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpDocReader\\": "src/PhpDocReader"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PhpDocReader parses @var and @param values in PHP docblocks (supports namespaced class names with the same resolution rules as PHP)",
+            "keywords": [
+                "phpdoc",
+                "reflection"
+            ],
+            "time": "2019-09-26T11:24:58+00:00"
         },
         {
             "name": "psr/http-message",
@@ -828,7 +864,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "karriere/json-decoder": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

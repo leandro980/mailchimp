@@ -9,7 +9,7 @@
         "thinkshout/mailchimp-api-php": "^2.0",
         "egulias/email-validator": "^2.1",
         "giggsey/libphonenumber-for-php": "^8.12",
-        "karriere/json-decoder": "^3.0"
+        "karriere/json-decoder": "dev-feature/v4"
     },
     "autoload": {
         "psr-4": {

@@ -8,11 +8,16 @@
 
 namespace Szopen\Mailchimp\Client;
 
+use Karriere\JsonDecoder\Exceptions\InvalidBindingException;
+use Karriere\JsonDecoder\Exceptions\InvalidJsonException;
+use Karriere\JsonDecoder\Exceptions\JsonValueException;
+use Karriere\JsonDecoder\Exceptions\NotExistingRootException;
 use Karriere\JsonDecoder\JsonDecoder;
 use Mailchimp\http\MailchimpHttpClientInterface;
 use Mailchimp\MailchimpAPIException;
 use Mailchimp\MailchimpLists;
 use Szopen\Mailchimp\Audience\AudienceList;
+use Szopen\Mailchimp\Audience\CampaignDefaults;
 use Szopen\Mailchimp\Helper\Transformer\Audience\AudienceListTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\CampaignDefaultsTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\LinkTransformer;
@@ -57,20 +62,43 @@ class AudienceListClient
      *
      * @return AudienceList
      *
-     * @throws MailchimpAPIException
+     * @throws InvalidBindingException
+     * @throws InvalidJsonException
+     * @throws JsonValueException
+     * @throws NotExistingRootException
      */
-    public function getList(string $listId): AudienceList
+    public function getList(string $listId): ?AudienceList
     {
         $stdObj = $this->thinkShoutManager->getList($listId);
 
-        $jsonObj = json_encode($stdObj);
+        $jsonString = json_encode($stdObj);
 
-        $transformer = new JsonDecoder(true, true);
+        $transformer = new JsonDecoder(true);
         $transformer->register(new AudienceListTransformer());
-        $transformer->register(new CampaignDefaultsTransformer());
-        $transformer->register(new LinkTransformer());
         $transformer->register(new StatsTransformer());
 
-        return $transformer->decode($jsonObj, AudienceList::class);
+        return $transformer->decode($jsonString, AudienceList::class);
+    }
+
+    /**
+     * @param array $parameters
+     *
+     * @return array
+     * @throws InvalidBindingException
+     * @throws InvalidJsonException
+     * @throws JsonValueException
+     * @throws NotExistingRootException
+     */
+    public function getLists(array $parameters = []): array
+    {
+        $arrayOfListsObj = $this->thinkShoutManager->getLists($parameters);
+
+        $jsonString = json_encode($arrayOfListsObj);
+
+        $transformer = new JsonDecoder();
+        $transformer->register(new AudienceListTransformer());
+        $transformer->register(new StatsTransformer());
+
+        return $transformer->decodeMultiple($jsonString, AudienceList::class, 'lists');
     }
 }
