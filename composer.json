@@ -6,10 +6,11 @@
     "homepage": "https://github.com/leandro980/mailchimp",
     "require": {
         "php": "^7.1",
-        "thinkshout/mailchimp-api-php": "^2.0",
         "egulias/email-validator": "^2.1",
         "giggsey/libphonenumber-for-php": "^8.12",
-        "karriere/json-decoder": "dev-feature/v4"
+        "karriere/json-decoder": "dev-feature/v4",
+        "drewm/mailchimp-api": "^2.5",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {

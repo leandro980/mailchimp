@@ -8,19 +8,16 @@
 
 namespace Szopen\Mailchimp\Client;
 
+use DrewM\MailChimp\MailChimp;
+use Exception;
 use Karriere\JsonDecoder\Exceptions\InvalidBindingException;
 use Karriere\JsonDecoder\Exceptions\InvalidJsonException;
 use Karriere\JsonDecoder\Exceptions\JsonValueException;
 use Karriere\JsonDecoder\Exceptions\NotExistingRootException;
 use Karriere\JsonDecoder\JsonDecoder;
-use Mailchimp\http\MailchimpHttpClientInterface;
-use Mailchimp\MailchimpAPIException;
-use Mailchimp\MailchimpLists;
 use Szopen\Mailchimp\Audience\AudienceList;
-use Szopen\Mailchimp\Audience\CampaignDefaults;
+use Szopen\Mailchimp\Exception\InvalidListException;
 use Szopen\Mailchimp\Helper\Transformer\Audience\AudienceListTransformer;
-use Szopen\Mailchimp\Helper\Transformer\Audience\CampaignDefaultsTransformer;
-use Szopen\Mailchimp\Helper\Transformer\Audience\LinkTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\StatsTransformer;
 
 /**
@@ -31,30 +28,26 @@ use Szopen\Mailchimp\Helper\Transformer\Audience\StatsTransformer;
 class AudienceListClient
 {
 
+    const LISTS_METHOD = '/lists';
+
+    const LIST_ID_METHOD = '/lists/%s';
+
     /**
-     * @var MailchimpLists
+     * @var MailChimp
      */
-    private $thinkShoutManager;
+    private $mcc;
 
     /**
      * AudienceListClient constructor.
      *
      * @param string $apiKey
-     * @param string $apiUser
-     * @param array $httpOption
-     * @param MailchimpHttpClientInterface|null $client
      *
+     * @throws Exception
      * @see https://github.com/thinkshout/mailchimp-api-php/blob/master/src/MailchimpLists.php
      */
-    public function __construct(string $apiKey,
-                                string $apiUser = 'apikey',
-                                array $httpOption = [],
-                                MailchimpHttpClientInterface $client = null)
+    public function __construct(string $apiKey)
     {
-        $this->thinkShoutManager = new MailchimpLists($apiKey,
-            $apiUser,
-            $httpOption,
-            $client);
+        $this->mcc = new MailChimp($apiKey);
     }
 
     /**
@@ -69,15 +62,42 @@ class AudienceListClient
      */
     public function getList(string $listId): ?AudienceList
     {
-        $stdObj = $this->thinkShoutManager->getList($listId);
 
-        $jsonString = json_encode($stdObj);
+        $method = sprintf(self::LIST_ID_METHOD, $listId);
+        $response = $this->mcc->get($method);
+
+        $jsonString = json_encode($response);
 
         $transformer = new JsonDecoder(true);
         $transformer->register(new AudienceListTransformer());
         $transformer->register(new StatsTransformer());
 
         return $transformer->decode($jsonString, AudienceList::class);
+    }
+
+    /**
+     * Determines if is a brand new list or an existing one and then post or edit the list
+     *
+     * @param AudienceList $list
+     *
+     * @throws InvalidListException
+     */
+    public function saveList(AudienceList $list)
+    {
+        // Patch/Edit an existing List
+        if(null !== $list->getId()){
+            $method = sprintf(self::LIST_ID_METHOD, $list->getId());
+            $response = $this->mcc->patch($method, $list->jsonSerialize());
+        }
+        // Saves a brand new List
+        else {
+            $response = $this->mcc->post(self::LISTS_METHOD, $list->jsonSerialize());
+        }
+
+        // If there was an error throws an exception
+        if(false === $response){
+            throw new InvalidListException($this->mcc->getLastError());
+        }
     }
 
     /**
@@ -91,9 +111,11 @@ class AudienceListClient
      */
     public function getLists(array $parameters = []): array
     {
-        $arrayOfListsObj = $this->thinkShoutManager->getLists($parameters);
 
-        $jsonString = json_encode($arrayOfListsObj);
+        $method = "/lists";
+        $response = $this->mcc->get($method);
+
+        $jsonString = json_encode($response);
 
         $transformer = new JsonDecoder();
         $transformer->register(new AudienceListTransformer());

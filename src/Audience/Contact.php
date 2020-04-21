@@ -223,14 +223,15 @@ class Contact implements \JsonSerializable
     /**
      * @param string $phone
      *
+     * @param string $defaultRegion
+     *
      * @return Contact
      * @throws NumberParseException
-     * @throws \InvalidArgumentException
      */
-    public function setPhone(string $phone): Contact
+    public function setPhone(string $phone, string $defaultRegion = 'IT'): Contact
     {
         $validator = \libphonenumber\PhoneNumberUtil::getInstance();
-        $number = $validator->parse($phone);
+        $number = $validator->parse($phone, $defaultRegion);
 
         if(!$validator->isValidNumber($number)){
             throw new \InvalidArgumentException("$phone is not a valid phone number");
