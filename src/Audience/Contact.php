@@ -8,7 +8,10 @@
 
 namespace Szopen\Mailchimp\Audience;
 
+use InvalidArgumentException;
+use JsonSerializable;
 use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberUtil;
 use Szopen\Mailchimp\Helper\JsonSerialiazerTrait;
 
 /**
@@ -18,7 +21,7 @@ use Szopen\Mailchimp\Helper\JsonSerialiazerTrait;
  *
  * @see https://mailchimp.com/developer/reference/lists/#List%20Contact
  */
-class Contact implements \JsonSerializable
+class Contact implements JsonSerializable
 {
 
     use JsonSerialiazerTrait;
@@ -222,19 +225,19 @@ class Contact implements \JsonSerializable
 
     /**
      * @param string $phone
-     *
      * @param string $defaultRegion
      *
-     * @return Contact
+     * @return $this
      * @throws NumberParseException
+     * @throws InvalidArgumentException
      */
     public function setPhone(string $phone, string $defaultRegion = 'IT'): Contact
     {
-        $validator = \libphonenumber\PhoneNumberUtil::getInstance();
+        $validator = PhoneNumberUtil::getInstance();
         $number = $validator->parse($phone, $defaultRegion);
 
         if(!$validator->isValidNumber($number)){
-            throw new \InvalidArgumentException("$phone is not a valid phone number");
+            throw new InvalidArgumentException("$phone is not a valid phone number");
         }
 
         $this->phone = $phone;

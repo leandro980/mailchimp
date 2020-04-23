@@ -16,7 +16,10 @@ use Karriere\JsonDecoder\Exceptions\JsonValueException;
 use Karriere\JsonDecoder\Exceptions\NotExistingRootException;
 use Karriere\JsonDecoder\JsonDecoder;
 use Szopen\Mailchimp\Audience\AudienceList;
+use Szopen\Mailchimp\Audience\Response\AudienceListsResponse;
 use Szopen\Mailchimp\Exception\InvalidListException;
+use Szopen\Mailchimp\Filters\Filter;
+use Szopen\Mailchimp\Helper\Transformer\Audience\AudienceListsResponseTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\AudienceListTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\StatsTransformer;
 
@@ -51,20 +54,37 @@ class AudienceListClient
     }
 
     /**
-     * @param string $listId
+     * Get information about a specific list in your Mailchimp account.
+     * Results include list members who have signed up but haven't confirmed
+     * their subscription yet and unsubscribed or cleaned.
      *
-     * @return AudienceList
+     * @param string $listId
+     * @param Filter|null $filters
+     *
+     * @return AudienceList|null
      *
      * @throws InvalidBindingException
      * @throws InvalidJsonException
+     * @throws InvalidListException
      * @throws JsonValueException
      * @throws NotExistingRootException
      */
-    public function getList(string $listId): ?AudienceList
+    public function getList(string $listId, Filter $filters = null): ?AudienceList
     {
 
+        $parameters = [];
+
+        if(null !== $filters){
+            $parameters = $filters->getParametersArray();
+        }
+
         $method = sprintf(self::LIST_ID_METHOD, $listId);
-        $response = $this->mcc->get($method);
+        $response = $this->mcc->get($method, $parameters);
+
+        // If there was an error throws an exception
+        if(false === $response){
+            throw new InvalidListException($this->mcc->getLastError());
+        }
 
         $jsonString = json_encode($response);
 
@@ -76,7 +96,7 @@ class AudienceListClient
     }
 
     /**
-     * Determines if is a brand new list or an existing one and then post or edit the list
+     * Create a new list in your Mailchimp account or update the settings for a specific list.
      *
      * @param AudienceList $list
      *
@@ -101,26 +121,63 @@ class AudienceListClient
     }
 
     /**
-     * @param array $parameters
+     * Get information about all lists in the account.
+     *
+     * @param Filter|null $filters List of parameters to filter results
      *
      * @return array
      * @throws InvalidBindingException
      * @throws InvalidJsonException
+     * @throws InvalidListException
      * @throws JsonValueException
      * @throws NotExistingRootException
      */
-    public function getLists(array $parameters = []): array
+    public function getLists(Filter $filters = null)
     {
 
+        $parameters = [];
+
+        if(null !== $filters){
+            $parameters = $filters->getParametersArray();
+        }
+
         $method = "/lists";
-        $response = $this->mcc->get($method);
+        $response = $this->mcc->get($method, $parameters);
+
+        // If there was an error throws an exception
+        if(false === $response){
+            throw new InvalidListException($this->mcc->getLastError());
+        }
 
         $jsonString = json_encode($response);
 
-        $transformer = new JsonDecoder();
+        $transformer = new JsonDecoder(true);
+
+        $transformer->register(new AudienceListsResponseTransformer());
         $transformer->register(new AudienceListTransformer());
         $transformer->register(new StatsTransformer());
+        return $transformer->decode($jsonString, AudienceListsResponse::class);
+        //return $transformer->decodeMultiple($jsonString, AudienceList::class, 'lists');
+    }
 
-        return $transformer->decodeMultiple($jsonString, AudienceList::class, 'lists');
+    /**
+     * Delete a list from your Mailchimp account.
+     * If you delete a list, you'll lose the list history—including subscriber activity, unsubscribes,
+     * complaints, and bounces.
+     * You’ll also lose subscribers’ email addresses, unless you exported and backed up your list.
+     *
+     * @param AudienceList $list
+     *
+     * @throws InvalidListException
+     */
+    public function deleteList(AudienceList $list)
+    {
+        $method = sprintf(self::LIST_ID_METHOD, $list->getId());
+        $response = $this->mcc->delete($method);
+
+        // If there was an error throws an exception
+        if(false === $response){
+            throw new InvalidListException($this->mcc->getLastError());
+        }
     }
 }
