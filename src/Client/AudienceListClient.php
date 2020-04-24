@@ -156,8 +156,8 @@ class AudienceListClient
         $transformer->register(new AudienceListsResponseTransformer());
         $transformer->register(new AudienceListTransformer());
         $transformer->register(new StatsTransformer());
+
         return $transformer->decode($jsonString, AudienceListsResponse::class);
-        //return $transformer->decodeMultiple($jsonString, AudienceList::class, 'lists');
     }
 
     /**
