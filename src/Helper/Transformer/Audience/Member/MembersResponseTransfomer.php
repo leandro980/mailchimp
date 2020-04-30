@@ -2,23 +2,21 @@
 /**
  * Project: mailchimp
  * User: Leandro Luccerini <leandro.luccerini@gmail.com>
- * Date: 23/04/20
- * Time: 09:12
+ * Date: 30/04/20
+ * Time: 14:47
  */
 
-namespace Szopen\Mailchimp\Helper\Transformer\Audience;
+namespace Szopen\Mailchimp\Helper\Transformer\Audience\Member;
 
 
 use Karriere\JsonDecoder\Bindings\ArrayBinding;
-use Karriere\JsonDecoder\Bindings\FieldBinding;
 use Karriere\JsonDecoder\ClassBindings;
 use Karriere\JsonDecoder\Transformer;
-use Szopen\Mailchimp\Audience\AudienceList;
 use Szopen\Mailchimp\Audience\Link;
-use \Szopen\Mailchimp\Audience\Response\AudienceListsResponse;
-use Szopen\Mailchimp\Audience\Response\Constraints;
+use Szopen\Mailchimp\Audience\Member\Member;
+use Szopen\Mailchimp\Audience\Response\MembersResponse;
 
-class AudienceListsResponseTransformer implements Transformer
+class MembersResponseTransfomer implements Transformer
 {
 
     /**
@@ -27,15 +25,11 @@ class AudienceListsResponseTransformer implements Transformer
     public function register(ClassBindings $classBindings)
     {
         $classBindings->register(new ArrayBinding("elements",
-            "lists",
-            AudienceList::class));
+            "members",
+            Member::class));
         $classBindings->register(new ArrayBinding("links",
             "_links",
             Link::class));
-
-        $classBindings->register((new FieldBinding('constraints',
-            'constraints',
-            Constraints::class)));
     }
 
     /**
@@ -43,6 +37,6 @@ class AudienceListsResponseTransformer implements Transformer
      */
     public function transforms()
     {
-        return AudienceListsResponse::class;
+        return MembersResponse::class;
     }
 }
