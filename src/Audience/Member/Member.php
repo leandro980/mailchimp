@@ -39,7 +39,7 @@ class Member implements JsonSerializable
      *
      * @var string
      */
-    private $id;
+    private $id = null;
 
     /**
      * Email address for a subscriber.
@@ -68,7 +68,7 @@ class Member implements JsonSerializable
      *
      * @var string
      */
-    private $emailType;
+    private $emailType = '';
 
     /**
      * Subscriber's current status.
@@ -152,14 +152,14 @@ class Member implements JsonSerializable
      *
      * @var string
      */
-    private $language;
+    private $language = '';
 
     /**
      * VIP status for subscriber.
      *
      * @var bool
      */
-    private $vip;
+    private $vip = false;
 
     /**
      * The list member's email client.
@@ -208,7 +208,7 @@ class Member implements JsonSerializable
      *
      * @var Tag[]
      */
-    private $tags;
+    private $tags = [];
 
     /**
      * The list id.
@@ -229,6 +229,10 @@ class Member implements JsonSerializable
      */
     public function __construct()
     {
+        $this->mergeFields = (object)[];
+        $this->interests = (object)[];
+        $this->location = (object)[];
+
         $this->allowedVarsToSerialization = ['emailAddress', 'emailType', 'status', 'mergeFields', 'interests',
             'language', 'vip', 'location', 'marketingPersmissions', 'tags', ];
     }
@@ -348,6 +352,61 @@ class Member implements JsonSerializable
     }
 
     /**
+     * @param string $emailAddress
+     *
+     * @return Member
+     */
+    public function setEmailAddress(string $emailAddress): Member
+    {
+        $this->emailAddress = $emailAddress;
+        return $this;
+    }
+
+    /**
+     * @param string $ipSignup
+     *
+     * @return Member
+     */
+    public function setIpSignup(string $ipSignup): Member
+    {
+        $this->ipSignup = $ipSignup;
+        return $this;
+    }
+
+    /**
+     * @param DateTime $timpestampSignup
+     *
+     * @return Member
+     */
+    public function setTimpestampSignup(DateTime $timpestampSignup): Member
+    {
+        $this->timpestampSignup = $timpestampSignup;
+        return $this;
+    }
+
+    /**
+     * @param string $language
+     *
+     * @return Member
+     */
+    public function setLanguage(string $language): Member
+    {
+        $this->language = $language;
+        return $this;
+    }
+
+    /**
+     * @param MarketingPermission $marketingPermissions
+     *
+     * @return Member
+     */
+    public function setMarketingPermissions(MarketingPermission $marketingPermissions): Member
+    {
+        $this->marketingPermissions = $marketingPermissions;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getListId(): string
@@ -386,9 +445,9 @@ class Member implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -487,6 +546,18 @@ class Member implements JsonSerializable
     public function isVip(): bool
     {
         return $this->vip;
+    }
+
+    /**
+     * @param bool $vip
+     *
+     * @return $this
+     */
+    public function setVip(bool $vip): self
+    {
+        $this->vip = $vip;
+
+        return $this;
     }
 
     /**

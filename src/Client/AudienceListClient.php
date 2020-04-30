@@ -43,6 +43,7 @@ class AudienceListClient
 
     const LIST_MEMBER_METHOD = '/lists/%s/members/%s';
     const LIST_MEMBERS_METHOD = '/lists/%s/members';
+    const LIST_MEMBER_PERMANENTDELETE_METHOD = ' /lists/%s/members/%s/actions/delete-permanent';
 
     /**
      * @var MailChimp
@@ -124,7 +125,7 @@ class AudienceListClient
         }
 
         // If there was an error throws an exception
-        if(false === $response){
+        if(false === $response || array_key_exists('type', $response)){
             throw new InvalidListException($this->mcc->getLastError());
         }
     }
@@ -186,7 +187,7 @@ class AudienceListClient
         $response = $this->mcc->delete($method);
 
         // If there was an error throws an exception
-        if(false === $response){
+        if(false === $response || array_key_exists('type', $response)){
             throw new InvalidListException($this->mcc->getLastError());
         }
     }
@@ -253,7 +254,7 @@ class AudienceListClient
 
         $member = $transformer->decode($jsonString, Member::class);
 
-        if($member->getStatus() == 404){
+        if(array_key_exists('type', $response)){
             return null;
         }
 
@@ -359,7 +360,79 @@ class AudienceListClient
         $response = $this->mcc->delete($method);
 
         // If there was an error throws an exception
-        if(false === $response){
+        if(false === $response || array_key_exists('type', $response)){
+            throw new InvalidMemeberException($this->mcc->getLastError());
+        }
+    }
+
+    /**
+     * Delete all personally identifiable information related to a list member, and remove them from a list.
+     * This will make it impossible to re-import the list member.
+     *
+     * @param Member $member
+     *
+     * @throws InvalidMemeberException
+     */
+    public function permamentDeleteMember(Member $member)
+    {
+        $this->permanentDeleteMemberByHash($member->getId(), $member->getListId());
+    }
+
+    /**
+     * Delete all personally identifiable information related to a list member, and remove them from a list.
+     * This will make it impossible to re-import the list member.
+     *
+     * @param string $email
+     * @param string $listId
+     *
+     * @throws InvalidMemeberException
+     */
+    public function permamentDeleteMemberByEmail(string $email, string $listId)
+    {
+        $hash = MailChimp::subscriberHash($email);
+        $this->permanentDeleteMemberByHash($hash, $listId);
+    }
+
+
+    /**
+     * Delete all personally identifiable information related to a list member, and remove them from a list.
+     * This will make it impossible to re-import the list member.
+     *
+     * @param string $hash
+     * @param string $listId
+     *
+     * @throws InvalidMemeberException
+     */
+    public function permanentDeleteMemberByHash(string $hash, string $listId)
+    {
+        $method = sprintf(self::LIST_MEMBER_PERMANENTDELETE_METHOD, $listId, $hash);
+        $response = $this->mcc->post($method);
+
+        // If there was an error throws an exception
+        if(false === $response || array_key_exists('type', $response)){
+            throw new InvalidMemeberException($this->mcc->getLastError());
+        }
+    }
+
+    /**
+     * Add a new member to the list or update information for a specific list member.
+     *
+     * @param Member $member
+     *
+     * @throws InvalidMemeberException
+     */
+    public function saveMember(Member $member)
+    {
+        if(null !== $member->getId()){
+            $method = sprintf(self::LIST_MEMBER_METHOD, $member->getListId(), $member->getId());
+            $response = $this->mcc->patch($method, $member->jsonSerialize());
+        } else {
+            $method = sprintf(self::LIST_MEMBERS_METHOD, $member->getListId());
+            $response = $this->mcc->post($method, $member->jsonSerialize());
+        }
+
+        // If there was an error throws an exception
+        if(false === $response || array_key_exists('type', $response)){
             throw new InvalidMemeberException($this->mcc->getLastError());
         }
     }
