@@ -6,14 +6,16 @@
  * Time: 10:59
  */
 
-namespace Szopen\Mailchimp\Filters\Parameters;
+namespace Szopen\Mailchimp\Filters\Parameters\Audience;
+
+use Szopen\Mailchimp\Filters\Parameters\AbstractStringParameter;
 
 /**
  * Class EmailParameter
  * Restrict results to lists that include a specific subscriber's email address.
  *
  * @author Leandro Luccerini <leandro.luccerini@gmail.com>
- * @package Szopen\Mailchimp\Filters\Parameters
+ * @package Szopen\Mailchimp\Filters\Parameters\Audience
  */
 class EmailParameter extends AbstractStringParameter
 {

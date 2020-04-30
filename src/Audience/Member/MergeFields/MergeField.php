@@ -12,7 +12,7 @@ namespace Szopen\Mailchimp\Audience\Member\MergeFields;
 use InvalidArgumentException;
 use Szopen\Mailchimp\Audience\Link;
 
-abstract class AbstractMergeField
+class MergeField
 {
     const TYPE_TEXT = 'text',
         TYPE_NUMBER = 'number',
@@ -46,11 +46,6 @@ abstract class AbstractMergeField
      * @var string
      */
     protected $tag;
-
-    /**
-     * @var string
-     */
-    protected $value;
 
     /**
      * The name of the merge field.
@@ -110,7 +105,7 @@ abstract class AbstractMergeField
     private $links = [];
 
     /**
-     * AbstractMergeField constructor.
+     * MergeField constructor.
      *
      * @param string $type
      *
@@ -118,10 +113,10 @@ abstract class AbstractMergeField
      */
     public function __construct(string $type)
     {
-        if (!in_array($type, [AbstractMergeField::TYPE_ADDRESS, AbstractMergeField::TYPE_BIRTHDAY,
-            AbstractMergeField::TYPE_DATE, AbstractMergeField::TYPE_DROPDOWN, AbstractMergeField::TYPE_IMAGE_URL,
-            AbstractMergeField::TYPE_NUMBER, AbstractMergeField::TYPE_PHONE, AbstractMergeField::TYPE_RADIO,
-            AbstractMergeField::TYPE_TEXT, AbstractMergeField::TYPE_URL, AbstractMergeField::TYPE_ZIP])) {
+        if (!in_array($type, [MergeField::TYPE_ADDRESS, MergeField::TYPE_BIRTHDAY,
+            MergeField::TYPE_DATE, MergeField::TYPE_DROPDOWN, MergeField::TYPE_IMAGE_URL,
+            MergeField::TYPE_NUMBER, MergeField::TYPE_PHONE, MergeField::TYPE_RADIO,
+            MergeField::TYPE_TEXT, MergeField::TYPE_URL, MergeField::TYPE_ZIP])) {
             throw new InvalidArgumentException("$type is not a valid MergeField type");
         }
 
@@ -158,18 +153,6 @@ abstract class AbstractMergeField
     }
 
     /**
-     * @param $value
-     *
-     * @return $this
-     */
-    public function setValue($value): self
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string
@@ -180,9 +163,9 @@ abstract class AbstractMergeField
     /**
      * @param string $name
      *
-     * @return AbstractMergeField
+     * @return MergeField
      */
-    public function setName(string $name): AbstractMergeField
+    public function setName(string $name): MergeField
     {
         $this->name = $name;
         return $this;
@@ -199,9 +182,9 @@ abstract class AbstractMergeField
     /**
      * @param bool $required
      *
-     * @return AbstractMergeField
+     * @return MergeField
      */
-    public function setRequired(bool $required): AbstractMergeField
+    public function setRequired(bool $required): MergeField
     {
         $this->required = $required;
         return $this;
@@ -218,9 +201,9 @@ abstract class AbstractMergeField
     /**
      * @param string|null $defaultValue
      *
-     * @return AbstractMergeField
+     * @return MergeField
      */
-    public function setDefaultValue(?string $defaultValue): AbstractMergeField
+    public function setDefaultValue(?string $defaultValue): MergeField
     {
         $this->defaultValue = $defaultValue;
         return $this;
@@ -237,9 +220,9 @@ abstract class AbstractMergeField
     /**
      * @param bool $public
      *
-     * @return AbstractMergeField
+     * @return MergeField
      */
-    public function setPublic(bool $public): AbstractMergeField
+    public function setPublic(bool $public): MergeField
     {
         $this->public = $public;
         return $this;
@@ -256,9 +239,9 @@ abstract class AbstractMergeField
     /**
      * @param Options|null $options
      *
-     * @return AbstractMergeField
+     * @return MergeField
      */
-    public function setOptions(?Options $options): AbstractMergeField
+    public function setOptions(?Options $options): MergeField
     {
         $this->options = $options;
         return $this;
@@ -275,9 +258,9 @@ abstract class AbstractMergeField
     /**
      * @param string $helpText
      *
-     * @return AbstractMergeField
+     * @return MergeField
      */
-    public function setHelpText(string $helpText): AbstractMergeField
+    public function setHelpText(string $helpText): MergeField
     {
         $this->helpText = $helpText;
         return $this;
@@ -314,9 +297,4 @@ abstract class AbstractMergeField
     {
         return $this->links;
     }
-
-    /**
-     * @return string|null
-     */
-    abstract public function getValue();
 }

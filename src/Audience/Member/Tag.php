@@ -37,7 +37,19 @@ class Tag
      *
      * @var DateTime
      */
-    private $dateAdded;
+    private $dateAdded = null;
+
+    /**
+     * Tag constructor.
+     *
+     * @param string $name
+     * @param string|null $id
+     */
+    public function __construct(string $name = '', string $id = null)
+    {
+        $this->name = $name;
+        $this->id = $id;
+    }
 
     /**
      * The name of the tag.
@@ -73,9 +85,9 @@ class Tag
     /**
      * The date and time the tag was added to the list member in ISO 8601 format.
      *
-     * @return DateTime
+     * @return null|DateTime
      */
-    public function getDateAdded(): DateTime
+    public function getDateAdded(): ?DateTime
     {
         return $this->dateAdded;
     }

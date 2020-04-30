@@ -24,7 +24,7 @@ class Note
      *
      * @var string
      */
-    private $id;
+    private $noteId;
 
     /**
      * The date and time the note was created in ISO 8601 format.
@@ -80,9 +80,9 @@ class Note
      *
      * @return string
      */
-    public function getId(): string
+    public function getNoteId(): string
     {
-        return $this->id;
+        return $this->noteId;
     }
 
     /**

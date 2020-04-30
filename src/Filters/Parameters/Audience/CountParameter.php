@@ -6,16 +6,17 @@
  * Time: 10:16
  */
 
-namespace Szopen\Mailchimp\Filters\Parameters;
+namespace Szopen\Mailchimp\Filters\Parameters\Audience;
 
 use \InvalidArgumentException;
+use Szopen\Mailchimp\Filters\Parameters\AbstractIntParameter;
 
 /**
  * Class CountParameter
  * The number of records to return. Default value is 10. Maximum value is 1000
  *
  * @author Leandro Luccerini <leandro.luccerini@gmail.com>
- * @package Szopen\Mailchimp\Filters\Parameters
+ * @package Szopen\Mailchimp\Filters\Parameters\Audience
  */
 class CountParameter extends AbstractIntParameter
 {

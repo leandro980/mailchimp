@@ -16,11 +16,15 @@ use Karriere\JsonDecoder\Exceptions\JsonValueException;
 use Karriere\JsonDecoder\Exceptions\NotExistingRootException;
 use Karriere\JsonDecoder\JsonDecoder;
 use Szopen\Mailchimp\Audience\AudienceList;
+use Szopen\Mailchimp\Audience\Member\Member;
 use Szopen\Mailchimp\Audience\Response\AudienceListsResponse;
 use Szopen\Mailchimp\Exception\InvalidListException;
 use Szopen\Mailchimp\Filters\Filter;
 use Szopen\Mailchimp\Helper\Transformer\Audience\AudienceListsResponseTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\AudienceListTransformer;
+use Szopen\Mailchimp\Helper\Transformer\Audience\Member\MemberTransformer;
+use Szopen\Mailchimp\Helper\Transformer\Audience\Member\NoteTransformer;
+use Szopen\Mailchimp\Helper\Transformer\Audience\Member\TagTransformer;
 use Szopen\Mailchimp\Helper\Transformer\Audience\StatsTransformer;
 
 /**
@@ -34,6 +38,8 @@ class AudienceListClient
     const LISTS_METHOD = '/lists';
 
     const LIST_ID_METHOD = '/lists/%s';
+
+    const LIST_GET_MEMBER = '/lists/%s/members/%s';
 
     /**
      * @var MailChimp
@@ -179,5 +185,74 @@ class AudienceListClient
         if(false === $response){
             throw new InvalidListException($this->mcc->getLastError());
         }
+    }
+
+    /**
+     * Get information about a specific list member, including a currently subscribed, unsubscribed, or bounced member.
+     *
+     * @param string $email
+     * @param string $listId
+     * @param Filter|null $filters
+     *
+     * @return Member|null
+     * @throws InvalidBindingException
+     * @throws InvalidJsonException
+     * @throws InvalidListException
+     * @throws JsonValueException
+     * @throws NotExistingRootException
+     */
+    public function getMemeberByEmail(string $email, string $listId, Filter $filters = null): ?Member
+    {
+        $hash = MailChimp::subscriberHash($email);
+
+        return $this->getMember($hash, $listId, $filters);
+    }
+
+    /**
+     * Get information about a specific list member, including a currently subscribed, unsubscribed, or bounced member.
+     *
+     * @param string $hash
+     * @param string $listId
+     * @param Filter|null $filters
+     *
+     * @return Member|null
+     * @throws InvalidBindingException
+     * @throws InvalidJsonException
+     * @throws InvalidListException
+     * @throws JsonValueException
+     * @throws NotExistingRootException
+     */
+    public function getMember(string $hash, string $listId, Filter $filters = null): ?Member
+    {
+        $method = sprintf(self::LIST_GET_MEMBER, $listId, $hash);
+
+        $parameters = [];
+
+        if(null !== $filters){
+            $parameters = $filters->getParametersArray();
+        }
+
+        $response = $this->mcc->get($method, $parameters);
+
+        // If there was an error throws an exception
+        if(false === $response){
+            throw new InvalidListException($this->mcc->getLastError());
+        }
+
+        $jsonString = json_encode($response);
+
+        $transformer = new JsonDecoder(true);
+        $transformer->register(new MemberTransformer());
+        $transformer->register(new NoteTransformer());
+        $transformer->register(new TagTransformer());
+
+
+        $member = $transformer->decode($jsonString, Member::class);
+
+        if($member->getStatus() == 404){
+            return null;
+        }
+
+        return $member;
     }
 }
